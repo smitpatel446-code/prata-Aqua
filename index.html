@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prata Aqua — Order Form</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #0097a7;
+    --teal-dark: #006978;
+    --teal-light: #4dd0e1;
+    --silver: #e8edf2;
+    --silver-dark: #b0bec5;
+    --white: #ffffff;
+    --text: #1a2e35;
+    --text-light: #546e7a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #e0f7fa 0%, #f5f9fc 40%, #e8edf2 100%);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* Animated water background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(0,151,167,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(77,208,225,0.10) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 80%, rgba(0,105,120,0.07) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Hex pattern overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%230097a7' fill-opacity='0.04'%3E%3Cpath d='M30 0l25.98 15v30L30 60 4.02 45V15z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    padding: 40px 20px 60px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .logo-hex {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 20px;
+    position: relative;
+    filter: drop-shadow(0 8px 24px rgba(0,151,167,0.3));
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .logo-hex img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    font-weight: 900;
+    color: var(--teal-dark);
+    letter-spacing: 2px;
+    line-height: 1.1;
+  }
+
+  .header p {
+    margin-top: 8px;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px auto;
+    max-width: 320px;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--teal-light), transparent);
+  }
+
+  .divider-hex {
+    width: 10px;
+    height: 10px;
+    background: var(--teal);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+
+  /* Card */
+  .form-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(0,151,167,0.15);
+    box-shadow:
+      0 4px 6px rgba(0,0,0,0.04),
+      0 20px 60px rgba(0,151,167,0.10),
+      inset 0 1px 0 rgba(255,255,255,0.9);
+    padding: 40px 36px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  /* Section labels */
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--teal-light), transparent);
+  }
+
+  /* Brand selector */
+  .brand-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .brand-option {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .brand-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .brand-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 12px;
+    border-radius: 16px;
+    border: 2px solid var(--silver-dark);
+    background: var(--silver);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    gap: 8px;
+  }
+
+  .brand-card .brand-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+  }
+
+  .brand-card .brand-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .brand-card .brand-sub {
+    font-size: 0.65rem;
+    color: var(--text-light);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .brand-option input:checked + .brand-card {
+    border-color: var(--teal);
+    background: linear-gradient(135deg, #e0f7fa, #f0fbfc);
+    box-shadow: 0 4px 16px rgba(0,151,167,0.2);
+  }
+
+  .brand-option input:checked + .brand-card .brand-name {
+    color: var(--teal-dark);
+  }
+
+  .brand-card:hover {
+    border-color: var(--teal-light);
+    transform: translateY(-2px);
+  }
+
+  /* Water category */
+  .water-category {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .water-option {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .water-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .water-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 10px;
+    border-radius: 14px;
+    border: 2px solid var(--silver-dark);
+    background: var(--silver);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .water-card .water-emoji { font-size: 1.6rem; }
+
+  .water-card .water-name {
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--text);
+  }
+
+  .water-card .water-desc {
+    font-size: 0.65rem;
+    color: var(--text-light);
+  }
+
+  .water-option input:checked + .water-card {
+    border-color: var(--teal);
+    background: linear-gradient(135deg, #e0f7fa, #f0fbfc);
+    box-shadow: 0 4px 16px rgba(0,151,167,0.2);
+  }
+
+  .water-card:hover {
+    border-color: var(--teal-light);
+    transform: translateY(-2px);
+  }
+
+  /* Venue type */
+  .venue-type {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .venue-chip {
+    position: relative;
+  }
+
+  .venue-chip input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+
+  .venue-chip label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1.5px solid var(--silver-dark);
+    background: var(--silver);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+
+  .venue-chip input:checked + label {
+    border-color: var(--teal);
+    background: var(--teal);
+    color: white;
+  }
+
+  .venue-chip label:hover {
+    border-color: var(--teal-light);
+    color: var(--teal);
+  }
+
+  /* Form fields */
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 12px;
+    border: 1.5px solid #d0dde2;
+    background: rgba(255,255,255,0.8);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    outline: none;
+    transition: all 0.25s;
+    appearance: none;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--teal);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(0,151,167,0.08);
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: #b0bec5;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  /* Submit button */
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 50%, var(--teal-light) 100%);
+    background-size: 200% auto;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 32px;
+    box-shadow: 0 8px 24px rgba(0,151,167,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .submit-btn:hover::before { left: 100%; }
+  .submit-btn:hover {
+    background-position: right center;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0,151,167,0.4);
+  }
+
+  .submit-btn:active { transform: translateY(0); }
+
+  .whatsapp-icon {
+    width: 22px;
+    height: 22px;
+    fill: white;
+  }
+
+  /* Footer note */
+  .footer-note {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 0.72rem;
+    color: var(--text-light);
+    letter-spacing: 1px;
+    animation: fadeUp 1s 0.6s ease both;
+  }
+
+  .footer-note a {
+    color: var(--teal);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* Success toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--teal-dark);
+    color: white;
+    padding: 14px 24px;
+    border-radius: 100px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 24px rgba(0,105,120,0.4);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    .form-card { padding: 28px 20px; }
+    .form-row { grid-template-columns: 1fr; }
+    .brand-selector { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-hex">
+      <img src="/mnt/user-data/uploads/ChatGPT_Image_Feb_28__2026__04_15_47_PM.png" alt="Prata Aqua Logo" onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex'">
+      <div id="fallback-logo" style="display:none; width:100%; height:100%; align-items:center; justify-content:center; background:linear-gradient(135deg,#e0f7fa,#b2ebf2); clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%); border-radius:4px;">
+        <span style="font-family:'Playfair Display',serif; font-size:1rem; font-weight:900; color:#006978;">PA</span>
+      </div>
+    </div>
+    <h1>PRATA AQUA</h1>
+    <p>Sales Order Portal</p>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-hex"></div>
+      <div class="divider-line"></div>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+
+    <!-- Brand Selection -->
+    <div class="section-label">Select Brand</div>
+    <div class="brand-selector">
+      <label class="brand-option">
+        <input type="radio" name="brand" value="Prata Aqua" checked>
+        <div class="brand-card">
+          <div class="brand-icon">💧</div>
+          <div class="brand-name">Prata Aqua</div>
+          <div class="brand-sub">Premium Water</div>
+        </div>
+      </label>
+      <label class="brand-option">
+        <input type="radio" name="brand" value="John Martin">
+        <div class="brand-card">
+          <div class="brand-icon">⭐</div>
+          <div class="brand-name">John Martin</div>
+          <div class="brand-sub">Signature Series</div>
+        </div>
+      </label>
+    </div>
+
+    <!-- Water Category -->
+    <div class="section-label">Water Category</div>
+    <div class="water-category">
+      <label class="water-option">
+        <input type="radio" name="water_category" value="Still Water" checked>
+        <div class="water-card">
+          <div class="water-emoji">🏔️</div>
+          <div class="water-name">Still Water</div>
+          <div class="water-desc">Pure & Natural</div>
+        </div>
+      </label>
+      <label class="water-option">
+        <input type="radio" name="water_category" value="Sparkling Water">
+        <div class="water-card">
+          <div class="water-emoji">✨</div>
+          <div class="water-name">Sparkling Water</div>
+          <div class="water-desc">Naturally Carbonated</div>
+        </div>
+      </label>
+    </div>
+
+    <!-- Venue Type -->
+    <div class="section-label">Venue Type</div>
+    <div class="venue-type" style="margin-bottom:24px;">
+      <div class="venue-chip"><input type="radio" name="venue_type" id="vt-hotel" value="Hotel" checked><label for="vt-hotel">🏨 Hotel</label></div>
+      <div class="venue-chip"><input type="radio" name="venue_type" id="vt-restaurant" value="Restaurant"><label for="vt-restaurant">🍽️ Restaurant</label></div>
+      <div class="venue-chip"><input type="radio" name="venue_type" id="vt-bar" value="Bar"><label for="vt-bar">🍸 Bar</label></div>
+      <div class="venue-chip"><input type="radio" name="venue_type" id="vt-other" value="Other"><label for="vt-other">📍 Other</label></div>
+    </div>
+
+    <!-- Venue Name -->
+    <div class="form-group">
+      <label>Name of Establishment</label>
+      <input type="text" id="venue_name" placeholder="e.g. Grand Hyatt, Skybar Rooftop..." required>
+    </div>
+
+    <!-- Location -->
+    <div class="form-group">
+      <label>Location / Address</label>
+      <input type="text" id="location" placeholder="City, area or full address..." required>
+    </div>
+
+    <!-- Cases & Date -->
+    <div class="form-row">
+      <div class="form-group">
+        <label>Number of Cases</label>
+        <input type="number" id="cases" placeholder="e.g. 10" min="1" required>
+      </div>
+      <div class="form-group">
+        <label>Delivery Date</label>
+        <input type="date" id="delivery_date" required>
+      </div>
+    </div>
+
+    <!-- Salesperson Name -->
+    <div class="form-group">
+      <label>Sales Representative</label>
+      <input type="text" id="salesperson" placeholder="Your name..." required>
+    </div>
+
+    <!-- Notes -->
+    <div class="form-group">
+      <label>Additional Notes</label>
+      <textarea id="notes" rows="3" placeholder="Special instructions, bottle size preferences, etc..."></textarea>
+    </div>
+
+    <!-- Submit -->
+    <button class="submit-btn" onclick="submitOrder()">
+      <svg class="whatsapp-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Send Order via WhatsApp
+    </button>
+
+  </div>
+
+  <div class="footer-note">
+    Orders are sent directly to our sales team via WhatsApp<br>
+    <a href="tel:6353872301">+63 5387 2301</a> · Prata Aqua Sales Division
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✓ Redirecting to WhatsApp...</div>
+
+<script>
+  // Set today as minimum date
+  document.getElementById('delivery_date').min = new Date().toISOString().split('T')[0];
+
+  function submitOrder() {
+    const brand = document.querySelector('input[name="brand"]:checked')?.value;
+    const waterCat = document.querySelector('input[name="water_category"]:checked')?.value;
+    const venueType = document.querySelector('input[name="venue_type"]:checked')?.value;
+    const venueName = document.getElementById('venue_name').value.trim();
+    const location = document.getElementById('location').value.trim();
+    const cases = document.getElementById('cases').value.trim();
+    const date = document.getElementById('delivery_date').value;
+    const salesperson = document.getElementById('salesperson').value.trim();
+    const notes = document.getElementById('notes').value.trim();
+
+    // Validation
+    if (!venueName || !location || !cases || !date || !salesperson) {
+      const missing = [];
+      if (!venueName) missing.push('Establishment Name');
+      if (!location) missing.push('Location');
+      if (!cases) missing.push('Number of Cases');
+      if (!date) missing.push('Delivery Date');
+      if (!salesperson) missing.push('Sales Rep Name');
+      alert('Please fill in: ' + missing.join(', '));
+      return;
+    }
+
+    const formattedDate = new Date(date).toLocaleDateString('en-GB', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    const message = [
+      `🌊 *PRATA AQUA — NEW ORDER*`,
+      ``,
+      `📦 *Brand:* ${brand}`,
+      `💧 *Water Category:* ${waterCat}`,
+      ``,
+      `🏢 *Venue Type:* ${venueType}`,
+      `🏷️ *Establishment:* ${venueName}`,
+      `📍 *Location:* ${location}`,
+      ``,
+      `📦 *Number of Cases:* ${cases}`,
+      `📅 *Delivery Date:* ${formattedDate}`,
+      ``,
+      `👤 *Sales Rep:* ${salesperson}`,
+      notes ? `📝 *Notes:* ${notes}` : null,
+      ``,
+      `_Sent via Prata Aqua Order Portal_`
+    ].filter(Boolean).join('\n');
+
+    const encodedMsg = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/6353872301?text=${encodedMsg}`;
+
+    // Show toast
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+      window.open(whatsappUrl, '_blank');
+    }, 1200);
+  }
+</script>
+
+</body>
+</html>
